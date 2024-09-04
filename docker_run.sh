@@ -10,7 +10,7 @@ docker run -it --rm \
     -v "/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     -v "$HOME/.Xauthority:/root/.Xauthority" \
     -v "/home/intern/LAEA:/root/ros_ws/src/LAEA" \
-    ros_noetic_image:v1.5 \
+    laea_noetic_image:v1.1 \
     bash -c "
     cd ~/ros_ws && source devel/setup.bash; 
     cd .. && source .bashrc;

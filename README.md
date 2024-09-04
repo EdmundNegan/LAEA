@@ -1,17 +1,17 @@
 # LAEA: A 2D LiDAR-Assisted UAV Exploration Algorithm for Unknown Environments 
 
-[**LAEA**]() is a 2D LiDAR-Assisted UAV Exploration Algorithm based on the framework of FAEP. Please kindly star ⭐ this project if it helps you. We take great efforts to develop and maintain it 😁😁. There are **two branches** of this project, **main** (Support for Ubuntu 18 Melodic)  and **noetic** (for Ubuntu 20 noetic).
+[**LAEA**]() is a 2D LiDAR-Assisted UAV Exploration Algorithm based on the framework of FAEP. The **main branch** of this project supports __Ubuntu 20 noetic__
 
 ![avatar](.assets/figure_sim.png)
 
-Details about our works (Youtube).
+Details about LAEA (Youtube).
 
 <p align="center">
   <a href="https://youtu.be/_a1Vl518Ra8" target="_blank"><img src=".assets/figure_cover.png" alt="video" width="800" height="400" border="1" /></a>
 </p>
 The video is also available on bilibili (**Chinese mainland**): https://www.bilibili.com/video/BV1mm421n71N 
 
-Please cite our paper if you use this project in your research:
+Original LAEA research paper:
 
 - [**LAEA: A 2D LiDAR-Assisted UAV Exploration Algorithm for Unknown Environments **](https://www.mdpi.com/2504-446X/8/4/128), Hou, Xiaolei, Zheng Pan, Li Lu, Yuhang Wu, Jinwen Hu, Yang Lyu, and Chunhui Zhao. 2024, *Drones*.
 
@@ -29,7 +29,7 @@ ISSN = {2504-446X},
 }
 ```
 
-Simulation experiment quik overview: Indoor1、Indoor2 and Forest. 
+Simulation experiment quick overview: Indoor1、Indoor2 and Forest. 
 
 ![avatar](.assets/indoor1-x30.gif)
 
@@ -40,100 +40,85 @@ Simulation experiment quik overview: Indoor1、Indoor2 and Forest.
 
 
 
-## Dependencies
-
-We use **default px4 gazebo simulation environments**, the below **dependencies** is needed. Among them, regarding the configuration of the px4 gazebo simulation environment, you need to refer to the information on the Internet. 
-
-- ros & mavros: Support Ubuntu18.04 **Melodic**, Ubuntu20.04 **Noetic**. Please search for the detailed installation tutorial, the following installation steps are for reference only.
+## Dependencies (Setup for project)
 
 ```bash
-# you can use below to install ros-full quickly
-# During this process, you need to make a selection from the terminal
-wget http://fishros.com/install -O fishros && sudo bash fishros
-
-########################## mavros ########################
-# for Ubuntu18.04 Melodic
-sudo apt install ros-melodic-mavros ros-melodic-mavros-extras -y
+# Download the LAEA project folders from edited repo
 # for Ubuntu20.04 Noetic
-sudo apt install ros-noetic-mavros ros-noetic-mavros-extras -y
+git clone https://github.com/EdmundNegan/LAEA.git --recursive -b noetic
 
-wget https://gitee.com/robin_shaun/XTDrone/raw/master/sitl_config/mavros/install_geographiclib_datasets.sh
-sudo chmod a+x ./install_geographiclib_datasets.sh
-# The next step takes a while to install, you can wait patiently
-sudo ./install_geographiclib_datasets.sh
+# Edit docker_run.sh line 12 with your path to LAEA folder e.g. "/home/intern/LAEA"
+# Download docker image from https://hub.docker.com/repository/docker/edmundngan/laea/tags 
+docker pull edmundngan/laea:latest
 ```
-
-- PX4-Autopilot: the **drone model files and world files** required for the px4 simulation are located in the `px4_gazebo/resource`. You need to **copy the corresponding files to your own px4 environment**. 
-
-```bash
-reference: https://github.com/PX4/PX4-Autopilot
-```
-
-- others
-
-```bash
-sudo apt-get install libarmadillo-dev libdw-dev
-sudo apt-get install 
-# nlopt for non-linear optimization
-# Source code installation is recommended, as follows
-git clone https://github.com/stevengj/nlopt.git
-cd nlopt/
-mkdir build&&cd build/
-cmake ..
-make 
-sudo make install
-
-# for Ubuntu18.04 Melodic
-sudo apt install ros-melodic-octomap -y
-# for Ubuntu20.04 Noetic
-sudo apt install ros-noetic-octomap -y
-```
-
 
 
 ## Quick Start
 
-Once the relevant environment has been configured (especially PX4), you can run simulation experiments using the provided code. The **drone model files and world files** required for the px4 simulation are located in the `px4_gazebo/resource`. You need to **copy the corresponding files to your own px4 environment**. 
+Once the relevant environment has been configured (especially PX4), you can run simulation experiments using the provided code.
 
+Build the environment for the project (Do this whenever C++ source files are edited)
 ```bash
-# cd ~/your_workspace_dir/src
-# mkdir -p ~/laea/src&&cd ~/laea/src
+# Run the docker container script
+bash docker_run.sh
 
-# Support Ubuntu18.04 Melodic, Ubuntu20.04 Noetic.
-# for Ubuntu18.04 Melodic
-git clone https://github.com/Poaos/LAEA --recursive
-# for Ubuntu20.04 Noetic
-git clone https://github.com/Poaos/LAEA --recursive -b noetic
-
-cd ..
+# path to workspace and catkin_make the environment
+cd ros_ws
 catkin_make
+```
 
+Code to start simulation and run exploration algorithm
+```bash
 ################ 1) Start your simulation environment ###############
 # My simulation environment boot example
-source ./devel/setup.bash
+bash docker_run.sh # If you haven't opened your container
 roslaunch px4_gazebo laea_gazebo_lidar.launch # drone&sensor data&sim-env
+```
 
+![avatar](.assets/Gazebo_Simulation.png)
+
+```bash
 ################ 2) Activate your drone controller ##################
 # We're using the default [mavros_controllers]
 # If you want to use the controller for real flight, a carefully adjustment for the parameters is needed, otherwise... 
-source ./devel/setup.bash
+# Open a new terminal in original container
+bash docker_exec.sh
 roslaunch px4_gazebo controller.launch # controller
-
-################ 3) Start the octomap mapping service ###############
-source ./devel/setup.bash
-roslaunch octomap_server scan_mapping.launch # octomap mapping
-
-################ 4) Activate our exploration algorithm ##############
-source ./devel/setup.bash
-roslaunch exploration_manager explore_test.launch # exploration algorithm
-
-################ 5) rviz for visualization ##########################
-source ./devel/setup.bash
-roslaunch exploration_manager rviz_alg.launch # rviz 
-
-#####################################################################
-The above startup steps are many, you can integrate them into a launch file, start separately for ease of understanding.
 ```
+
+Switch back into first container 
+```bash
+# Arm the drone and change the flight mode to offboard
+pxh> commander arm
+pxh> commander mode offboard
+# Drone should takeoff now
+```
+
+```bash
+################ 3) Start the octomap mapping service ###############
+# Open a new terminal in original container
+bash docker_exec.sh
+roslaunch octomap_server scan_mapping.launch # octomap mapping
+```
+```bash
+################ 4) rviz for visualization ##########################
+# Open a new terminal in original container
+bash docker_exec.sh
+roslaunch exploration_manager rviz_alg.launch # rviz 
+```
+![avatar](.assets/Rviz_Initial.png)
+
+```bash
+################ 5) Activate our exploration algorithm ##############
+# Open a new terminal in original container
+bash docker_exec.sh
+roslaunch exploration_manager explore_test.launch # exploration algorithm
+```
+Select 2D Nav Goal in Rviz and click on the map to start exploration and mapping
+![avatar](.assets/Rviz_Exploration_Manager.png) 
+
+The above startup steps are very long, you can integrate them into a launch file and run it for simplicity's sake
+
 
 Of course, **any simulation environment is fine** as long as it **provides the following data required** by the algorithm. Specifically, you need to modify the following files:
 
