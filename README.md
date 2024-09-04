@@ -120,6 +120,20 @@ Select 2D Nav Goal in Rviz and click on the map to start exploration and mapping
 The above startup steps are very long, you can integrate them into a launch file and run it for simplicity's sake
 
 
+Recording of drone simulations in Indoor World 1 and Indoor World 2 (Once you successfully run everything)
+
+```html
+<video controls>
+  <source src=".assets/Indoor_01_Fast.webm" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<video controls>
+  <source src=".assets/Indoor_02_Fast.webm" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+```
+
 Of course, **any simulation environment is fine** as long as it **provides the following data required** by the algorithm. Specifically, you need to modify the following files:
 
 - exploration_manager/launch/poaozz/**explore_test.launch**: Provides drone and camera position and depth image
