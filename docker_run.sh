@@ -7,10 +7,10 @@ docker run -it --rm \
     --name laea \
     -e "DISPLAY=$DISPLAY" \
     -e "QT_X11_NO_MITSHM=1" \
-    -v "/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v "$HOME/.Xauthority:/root/.Xauthority" \
-    -v "/home/intern/LAEA:/root/ros_ws/src/LAEA" \
-    laea_noetic_image:v1.1 \
+    -v "C:\Users\nganm\Documents\LAEA:/root/ros_ws/src/LAEA" \
+    edmundngan/laea:latest \
     bash -c "
     cd ~/ros_ws && source devel/setup.bash; 
     cd .. && source .bashrc;
