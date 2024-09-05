@@ -9,7 +9,7 @@ docker run -it --rm \
     -e "QT_X11_NO_MITSHM=1" \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v "$HOME/.Xauthority:/root/.Xauthority" \
-    -v "C:\Users\nganm\Documents\LAEA:/root/ros_ws/src/LAEA" \
+    -v "/home/intern/LAEA:/root/ros_ws/src/LAEA" \
     edmundngan/laea:latest \
     bash -c "
     cd ~/ros_ws && source devel/setup.bash; 
